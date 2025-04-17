@@ -1,12 +1,16 @@
 # EBMA-Net
 ## Introduction
 Accurate segmentation of pear leaf diseases is paramount for enhancing diag-nostic precision and optimizing agricultural disease management. However,variations in disease color, texture, and morphology, coupled with changes inlighting conditions and gradual disease progression, pose significant challenges.To address these issues, we propose EBMA-Net, an edge-aware multi-scalenetwork.
+![uvos_results](./docs/introduction1.png)
 
 EBMA-Net introduces a Multi-Dimensional Joint Attention Module(MDJA) that leverages atrous convolutions to capture lesion information atdifferent scales, enhancing the model’s receptive field and multi-scale process-ing capabilities. 
+![uvos_results](./docs/introduction1.png)
 
 An Edge Feature Extraction Branch (EFFB) is also designedto extract and integrate edge features, guiding the network’s focus towardsedge information and reducing information redundancy. 
+![uvos_results](./docs/introduction1.png)
 
 Experiments on a self-constructed pear leaf disease dataset demonstrate that EBMA-Net achieves aMean Intersection over Union (MIoU) of 86.25%, Mean Pixel Accuracy (MPA)of 91.68%, and Dice coeﬀicient of 92.43%, significantly outperforming compari-son models. These results highlight EBMA-Net’s effectiveness in precise pear leafdisease segmentation under complex conditions
+![uvos_results](./docs/introduction1.png)
 
 ## Requirements
 Requirements are given below.
