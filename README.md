@@ -5,8 +5,7 @@ Accurate segmentation of pear leaf diseases is paramount for enhancing diag-nost
 
 EBMA-Net introduces a Multi-Dimensional Joint Attention Module(MDJA) that leverages atrous convolutions to capture lesion information atdifferent scales, enhancing the model’s receptive field and multi-scale process-ing capabilities. 
 ![Block](./fig/MDJA.png)
-![Block](./fig/AGC.png)
-![Block](./fig/GMSA.png)
+![Block](./fig/AGC.png) ![Block](./fig/GMSA.png)
 
 An Edge Feature Extraction Branch (EFFB) is also designedto extract and integrate edge features, guiding the network’s focus towardsedge information and reducing information redundancy. 
 ![Block](./fig/BFA.png)
@@ -52,6 +51,7 @@ python predict.py
 - Run get_miou.py to obtain the miou value.
 
 ## Citation
+The article has not yet been accepted at present.
 ```
 @article{shu2024enhanced,
   title={Enhanced Disease Segmentation in Pear Leaves via Edge-Aware Multi-Scale Attention Network},
