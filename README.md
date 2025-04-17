@@ -1,5 +1,6 @@
 # EBMA-Net
 ## Introduction
+```
 Accurate segmentation of pear leaf diseases is paramount for enhancing diag-
 nostic precision and optimizing agricultural disease management. However,
 variations in disease color, texture, and morphology, coupled with changes in
@@ -16,8 +17,10 @@ Mean Intersection over Union (MIoU) of 86.25%, Mean Pixel Accuracy (MPA)
 of 91.68%, and Dice coeﬀicient of 92.43%, significantly outperforming compari-
 son models. These results highlight EBMA-Net’s effectiveness in precise pear leaf
 disease segmentation under complex conditions
+```
 ## Requirements
 
+## Datasets
 
 ## Training
 ```
@@ -27,6 +30,11 @@ disease segmentation under complex conditions
 4. Before training, use the voc_annotation.py file to generate the corresponding txt files.
 5. Note to modify the num_classes in train.py to the number of categories + 1.
 6. Run train.py to start the training.
+```
+## Testing
+- Use the below command for testing:
+```
+python predict.py  
 ```
 
 ## Citation
