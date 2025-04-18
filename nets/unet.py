@@ -77,7 +77,7 @@ class GroupBatchnorm2d(nn.Module):
         return x * self.weight + self.bias
 
 
-class SRU(nn.Module):
+class GMSA(nn.Module):
     def __init__(self,
                  oup_channels: int,
                  group_num: int = 16,
@@ -103,11 +103,7 @@ class SRU(nn.Module):
         return out
 
 
-class CRU(nn.Module):
-    '''
-    alpha: 0<alpha<1
-    '''
-
+class AGC(nn.Module):
     def __init__(self,
                  op_channel: int,
                  alpha: float = 1 / 2,
@@ -164,7 +160,7 @@ class CRU(nn.Module):
         return out
 
 
-class ScConv(nn.Module):
+class MDJA(nn.Module):
     def __init__(self,
                  op_channel: int,
                  group_num: int = 4,
@@ -175,10 +171,10 @@ class ScConv(nn.Module):
                  group_kernel_size: int = 3,
                  ):
         super().__init__()
-        self.SRU = SRU(op_channel,
+        self.GMSA = GMSA(op_channel,
                        group_num=group_num,
                        gate_treshold=gate_treshold)
-        self.CRU = CRU(op_channel,
+        self.AGC = AGC(op_channel,
                        alpha=alpha,
                        squeeze_radio=squeeze_radio,
                        group_size=group_size,
@@ -186,14 +182,14 @@ class ScConv(nn.Module):
         # self.conv = nn.Conv2d(op_channel * 2, op_channel, kernel_size=1)
 
     def forward(self, x):
-        x = self.SRU(x)
-        x = self.CRU(x)
+        x = self.GMSA(x)
+        x = self.AGC(x)
 
         # x = self.conv(torch.cat([x1, x2], dim=1))
         return x
 
 
-class Edge(nn.Module):
+class EFE(nn.Module):
     def __init__(self, in_channels, sobel_strength=1):
         super(Edge, self).__init__()
         self.sobel_strength = sobel_strength
@@ -243,7 +239,7 @@ class Edge(nn.Module):
         return output
 
 
-class RH(nn.Module):
+class BFA(nn.Module):
     def __init__(self, in_channels, r, size):
         super(RH, self).__init__()
         self.in_channel = in_channels
@@ -317,7 +313,7 @@ class DoubleConv(nn.Sequential):
 class Down(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(Down, self).__init__()
-        self.convp = ScConv(in_channels)
+        self.convp = MDJA(in_channels)
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)  # 最大池化层进行下采样
         self.convdown = DoubleConv(in_channels, out_channels)  # 双卷积块
         # self.gate = GCT(in_channels)
@@ -382,7 +378,7 @@ class Unet(nn.Module):
         self.in_channels = in_channels
         self.num_classes = num_classes
         self.bilinear = bilinear
-        self.edge_f = Edge(in_channels)
+        self.efe = EFE(in_channels)
         self.in_conv = DoubleConv(in_channels, base_c)  # 输入的双卷积块
         self.down1 = Down(base_c, base_c * 2)  # 下采样层 1
         self.down2 = Down(base_c * 2, base_c * 4)  # 下采样层 2
@@ -396,11 +392,11 @@ class Unet(nn.Module):
         self.up2 = Up(base_c * 4, base_c * 4 // factor, bilinear)  # 上采样层 2
         self.up3 = Up(base_c * 2, base_c * 2 // factor, bilinear)  # 上采样层 3
         self.up4 = Up(base_c, base_c, bilinear)  # 上采样层 4
-        self.rh_s4 = RH(base_c, 4, 1)
+        self.bfa = BFA(base_c, 4, 1)
         self.out_conv = OutConv(base_c, num_classes)  # 输出卷积层
 
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
-        x_e = self.edge_f(x)
+        x_e = self.efe(x)
         x1 = self.in_conv(x)  # 输入双卷积块
         x2 = self.down1(x1)  # 下采样层 1
         x3 = self.down2(x2)  # 下采样层 2
@@ -413,7 +409,7 @@ class Unet(nn.Module):
         x = self.up3(x, x2)  # 上采样层 3
         x = self.up4(x, x1)  # 上采样层 4
 
-        x = self.rh_s4(x, x_e)
+        x = self.bfa(x, x_e)
         logits = self.out_conv(x)  # 输出卷积层
 
         return logits
