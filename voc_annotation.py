@@ -94,5 +94,4 @@ if __name__ == "__main__":
         print("检测到标签中仅仅包含背景像素点，数据格式有误，请仔细检查数据集格式。")
 
     print("JPEGImages中的图片应当为.jpg文件、SegmentationClass中的图片应当为.png文件。")
-    print("如果格式有误，参考:")
-    print("https://github.com/bubbliiiing/segmentation-format-fix")
+   
