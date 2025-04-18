@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-@Time ： 2023/6/14 17:48
-@Auth ： 丁小杰
-@File ：data_augument.py
-@IDE ：PyCharm
-@Motto:咕咕嘎嘎
-"""
+
 from PIL import Image, ImageEnhance, ImageOps, ImageFile
 import numpy as np
 import random
@@ -17,9 +10,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class DataAugmentation:
-    """
-    包含数据增强的八种方式
-    """
+    
 
     def __init__(self):
         pass
@@ -30,12 +21,7 @@ class DataAugmentation:
 
     @staticmethod
     def randomRotation(image, label, mode=Image.BICUBIC):
-        """
-         对图像进行随机任意角度(0~360度)旋转
-        :param mode 邻近插值,双线性插值,双三次B样条插值(default)
-        :param image PIL的图像image
-        :return: 旋转转之后的图像
-        """
+       
 
         image2 = image.convert('RGBA')  # 将图片模式改为'RGBA'模式
         random_angle = random.randint(1, 360)
@@ -52,14 +38,10 @@ class DataAugmentation:
         return new_Image, label
         # return image.rotate(random_angle, mode), label.rotate(random_angle, Image.NEAREST)
 
-    # 暂时未使用这个函数
+    
     @staticmethod
     def randomCrop(image, label):
-        """
-        对图像随意剪切,考虑到图像大小范围(68,68),使用一个一个大于(36*36)的窗口进行截图
-        :param image: PIL的图像image
-        :return: 剪切之后的图像
-        """
+       
         image_width = image.size[0]
         image_height = image.size[1]
         crop_win_size = np.random.randint(40, 68)
@@ -70,11 +52,7 @@ class DataAugmentation:
 
     @staticmethod
     def randomColor(image, label):
-        """
-        对图像进行颜色抖动
-        :param image: PIL的图像image
-        :return: 有颜色色差的图像image
-        """
+       
         random_factor = np.random.randint(5, 18) / 10.  # 随机因子
         color_image = ImageEnhance.Color(image).enhance(random_factor)  # 调整图像的饱和度
         random_factor = np.random.randint(5, 12) / 10.  # 随机因子
@@ -86,20 +64,10 @@ class DataAugmentation:
 
     @staticmethod
     def randomGaussian(image, label, mean=0.2, sigma=0.3):
-        """
-         对图像进行高斯噪声处理
-        :param image:
-        :return:
-        """
+        
 
         def gaussianNoisy(im, mean=0.2, sigma=0.3):
-            """
-            对图像做高斯噪音处理
-            :param im: 单通道图像
-            :param mean: 偏移量
-            :param sigma: 标准差
-            :return:
-            """
+           
             for _i in range(len(im)):
                 im[_i] += random.gauss(mean, sigma)
             return im
@@ -154,12 +122,7 @@ opsList = {"randomRotation", "randomColor", "randomGaussian"}
 
 
 def threadOPS(img_path, new_img_path, label_path, new_label_path):
-    """
-    多线程处理事务
-    :param src_path: 资源文件
-    :param des_path: 目的地文件
-    :return:
-    """
+
     # img path
     if os.path.isdir(img_path):
         img_names = os.listdir(img_path)
@@ -230,7 +193,7 @@ def threadOPS(img_path, new_img_path, label_path, new_label_path):
 
 
 if __name__ == '__main__':
-    threadOPS(r"C:\Users\12845\Desktop\新建文件夹\JPEGImages",
-              r"C:\Users\12845\Desktop\新建文件夹\new_JPEGImages",
-              r"C:\Users\12845\Desktop\新建文件夹\SegmentationClass",
-              r"C:\Users\12845\Desktop\新建文件夹\new_SegmentationClass")
+    threadOPS(r".\JPEGImages",
+              r".\new_JPEGImages",
+              r".\SegmentationClass",
+              r".\new_SegmentationClass")
