@@ -11,25 +11,15 @@ import numpy as np
 
 from labelme import utils
 
-'''
-制作自己的语义分割数据集需要注意以下几点：
-1、我使用的labelme版本是3.16.7，建议使用该版本的labelme，有些版本的labelme会发生错误，
-   具体错误为：Too many dimensions: 3 > 2
-   安装方式为命令行pip install labelme==3.16.7
-2、此处生成的标签图是8位彩色图，与视频中看起来的数据集格式不太一样。
-   虽然看起来是彩图，但事实上只有8位，此时每个像素点的值就是这个像素点所属的种类。
-   所以其实和视频中VOC数据集的格式一样。因此这样制作出来的数据集是可以正常使用的。也是正常的。
-'''
 
 if __name__ == '__main__':
-    # 转换后保存的jpg格式的图像地址
+   
     jpgs_path = "./Rust(1)/rustf"
-    # 转换后保存的png格式的mask（分割掩膜）的地址
+    
     pngs_path = "./Rust(1)/rustf_mask"
-    # 类别名称
+    
     classes = ["_background_", "Rust", "curl", "slug"]
-    # classes     = ["_background_","cat","dog"]
-    # 获取在某一地址下的文件列表，包括图像jpg和对应分割掩膜json文件
+    
     count = os.listdir("./Rust(1)/Rust_f/")
     # 遍历文件列表
     for i in range(0, len(count)):
