@@ -191,7 +191,7 @@ class MDJA(nn.Module):
 
 class EFE(nn.Module):
     def __init__(self, in_channels, sobel_strength=1):
-        super(Edge, self).__init__()
+        super(EFE, self).__init__()
         self.sobel_strength = sobel_strength
         self.in_channels = in_channels
         # self.conv = nn.Conv2d(in_channels=3, out_channels=1, kernel_size=1)
@@ -241,7 +241,8 @@ class EFE(nn.Module):
 
 class BFA(nn.Module):
     def __init__(self, in_channels, r, size):
-        super(RH, self).__init__()
+        super(BFA, self).__init__()
+
         self.in_channel = in_channels
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         self.gmp = nn.AdaptiveMaxPool2d((1, 1))
@@ -265,7 +266,7 @@ class BFA(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.conv1 = ConvBNReLUBlock(1, in_channels, 1)
         # self.gate = GCT(1)
-        self.convp = ScConv(in_channels)
+        self.convp = MDJA(in_channels)
 
     def forward(self, x, edge):
         x_a = self.gap(x)
@@ -334,7 +335,8 @@ class Up(nn.Module):
         # self.conv = nn.Conv2d(1, 1, 7, padding=3)
         # self.convl = DoubleConv(in_channels, out_channels)  # 双卷积块
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-        self.convp = ScConv(out_channels)
+        self.convp = MDJA(out_channels)
+
         # self.conv_rh = ScConv_up(in_channels)
         # if bilinear:
         #       # 双线性插值上采样
