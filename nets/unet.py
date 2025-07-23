@@ -49,9 +49,7 @@ class TQ(nn.Module):
         x_a = x
         x_1 = self.conv1(x)
         x_2 = self.conv2(x)
-        x_3 = self.conv3(x)
         x_4 = self.conv4(x)
-        out = x_a + x_1 + x_2 + x_3 + x_4
         return out
 
 
@@ -71,9 +69,6 @@ class GroupBatchnorm2d(nn.Module):
         N, C, H, W = x.size()
         x = x.view(N, self.group_num, -1)
         mean = x.mean(dim=2, keepdim=True)
-        std = x.std(dim=2, keepdim=True)
-        x = (x - mean) / (std + self.eps)
-        x = x.view(N, C, H, W)
         return x * self.weight + self.bias
 
 
@@ -94,9 +89,6 @@ class GMSA(nn.Module):
 
     def forward(self, x):
         gn_x = self.gn(x)
-        w_gamma = self.gn.weight / torch.sum(self.gn.weight)
-        w_gamma = w_gamma.view(1, -1, 1, 1)
-        reweigts = self.sigomid(gn_x * w_gamma)
         x = x * reweigts
         out = self.tq(x)
 
@@ -114,14 +106,6 @@ class AGC(nn.Module):
         super().__init__()
         self.up_channel = up_channel = int(alpha * op_channel)
         self.low_channel = low_channel = op_channel - up_channel
-        self.squeeze1 = nn.Sequential(
-            # GCT(up_channel),
-            nn.Conv2d(up_channel, up_channel // squeeze_radio, kernel_size=1, bias=False)
-        )
-        self.squeeze2 = nn.Sequential(
-            # GCT(low_channel),
-            nn.Conv2d(low_channel, low_channel // squeeze_radio, kernel_size=1, bias=False)
-        )
         # up
         self.GWC = nn.Sequential(
             # GCT(up_channel // squeeze_radio),
@@ -141,23 +125,7 @@ class AGC(nn.Module):
         self.advavg = nn.AdaptiveAvgPool2d(1)
         # self.channelattention = ChannelAttention(op_channel, op_channel // 4)
 
-    def forward(self, x):
-        # Split
-        up, low = torch.split(x, [self.up_channel, self.low_channel], dim=1)
-        up, low = self.squeeze1(up), self.squeeze2(low)
-        # Transform
-        Y1 = self.GWC(up) + self.PWC1(up)
-        Y2 = torch.cat([self.PWC2(low), low], dim=1)
-        # Fuse
-        # out = torch.cat([Y1, Y2], dim=1)
-        # out = F.softmax(self.advavg(out), dim=1) * out
-        # out1, out2 = torch.split(out, out.size(1) // 2, dim=1)
-        out1 = F.softmax(self.advavg(Y1), dim=1) * x
-        out2 = F.softmax(self.advavg(Y2), dim=1) * x
-        out = out1 + out2 + x
-        #        out1 = self.channelattention(Y1) * x
-        #  out2 = self.channelattention(Y2) * x
-        return out
+
 
 
 class MDJA(nn.Module):
@@ -181,12 +149,7 @@ class MDJA(nn.Module):
                        group_kernel_size=group_kernel_size)
         # self.conv = nn.Conv2d(op_channel * 2, op_channel, kernel_size=1)
 
-    def forward(self, x):
-        x = self.GMSA(x)
-        x = self.AGC(x)
 
-        # x = self.conv(torch.cat([x1, x2], dim=1))
-        return x
 
 
 class EFE(nn.Module):
@@ -211,32 +174,10 @@ class EFE(nn.Module):
         self.register_buffer('sobel', sobel)
         self.bn = nn.BatchNorm2d(in_channels)
         self.silu = nn.SiLU(inplace=True)
-        self.threshold = 1
+
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x):
 
-        sobel_x = self.sobel_x.expand(self.in_channels, 1, 3, 3)
-        sobel_y = self.sobel_y.expand(self.in_channels, 1, 3, 3)
-        sobel = self.sobel.expand(self.in_channels, 1, 3, 3)
-        #
-        x_o = F.conv2d(x, sobel, padding=1, groups=self.in_channels)
-        #    grad1 = self.bn(grad1)
-        #   x_o = self.relu(grad1)
-        # x_o = x_o.clamp(0, 1)
-        y = self.sigmoid(x_o) * x + x
-
-        grad_x = F.conv2d(y, sobel_x, padding=1, groups=self.in_channels)
-        grad_y = F.conv2d(y, sobel_y, padding=1, groups=self.in_channels)
-        grad2 = torch.sqrt(grad_x ** 2 + grad_y ** 2)
-        grad2 = self.bn(grad2)
-        grad2 = self.silu(grad2)
-        grad2 = grad2.sum(dim=1, keepdim=True)
-        # print(output)
-
-        x_1 = grad2.clamp(0, 1)
-        output = self.sigmoid(x_1) * x_1 + x_1
-        return output
 
 
 class BFA(nn.Module):
