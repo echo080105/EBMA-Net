@@ -1,25 +1,10 @@
 # EBMA-Net
 ## Introduction
 Accurate segmentation of pear leaf diseases is paramount for enhancing diag-nostic precision and optimizing agricultural disease management. However,variations in disease color, texture, and morphology, coupled with changes inlighting conditions and gradual disease progression, pose significant challenges.To address these issues, we propose EBMA-Net, an edge-aware multi-scalenetwork.
-<div align=center>
-<img src="./fig/EBMA-Net.png" width="80%">
-</div>
 
 EBMA-Net introduces a Multi-Dimensional Joint Attention Module(MDJA) that leverages atrous convolutions to capture lesion information atdifferent scales, enhancing the model’s receptive field and multi-scale process-ing capabilities. 
-<div align=center>
-  <img src="./fig/MDJA.png" width="50%" >
-</div>
-
-<div align=center>
-  <img src="./fig/GMSA.png" width="34%">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="./fig/AGC.png" width="21%">
-</div>
 
 An Edge Feature Extraction Branch (EFFB) is also designedto extract and integrate edge features, guiding the network’s focus towardsedge information and reducing information redundancy. 
-<div align=center>
-<img src="./fig/BFA.png" width="35%">
-</div>
 
 Experiments on a self-constructed pear leaf disease dataset demonstrate that EBMA-Net achieves aMean Intersection over Union (MIoU) of 86.25%, Mean Pixel Accuracy (MPA)of 91.68%, and Dice coeﬀicient of 92.43%, significantly outperforming compari-son models. These results highlight EBMA-Net’s effectiveness in precise pear leafdisease segmentation under complex conditions
 
@@ -61,15 +46,5 @@ python predict.py
 - Set the value of name_classes in get_miou.py to the categories that need to be distinguished.
 - Run get_miou.py to obtain the miou value.
 
-## Citation
-The article has not yet been accepted at present.
-```
-@article{shu2024enhanced,
-  title={Enhanced Disease Segmentation in Pear Leaves via Edge-Aware Multi-Scale Attention Network},
-  author={Shu, Xin and Ding, Jie and Wang, Wenwu and Xu, Wenwen and Jiao, Yuxuan and Wu, Yunzhi},
-  journal={The Visual Computer},
-  year={2024}
-}
-```
 ## Send us feedback
 - If you have any queries or feedback, please contact us @(**22115860@stu.ahau.edu.cn**).
